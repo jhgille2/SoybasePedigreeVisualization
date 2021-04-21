@@ -9,3 +9,6 @@ After that, the easiest way to use this script would probably be to clone this r
 ## Future work  
 - A shiny app that includes cytoscape would be nice so that everything can be done in the same place. The [cyjShiny](https://github.com/cytoscape/cyjShiny) package looks promising, but I'll have to mess around with it.  
 - Add functions to make more traditional text based pedigrees. While not as helpful for visualizing the pedigrees (IMO), could still be helpful to augment the plots with an alternate representation of the same information. 
+- Make one big "global" pedigree tree. Besides it just being interesting to look at the full available crossing history, I think structuring the data as a graph will make finding the pedigree for any one cultivar faster and easier by traversing upwards through the graph from the cultivars node.    
+- Add tables with supplementary data for the cultivars. I think phenotype data from [GRIN](https://soybase.org/grindata/), and possibly [haplotype data](https://soybase.org/snps/index.php#dltable) from soybase would be good starts. Could be used to investigate patterns in phenotypic and genotypic similarity/differences. 
+
