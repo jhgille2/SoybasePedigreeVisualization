@@ -1,6 +1,8 @@
 # Soybase Pedigree Visualization  
 Visualization tools for the Soybase soybean parentage data.
 
+![Example pedigree](./Images/ExampleNetwork.svg)
+
 ## Overview  
 The main script is **CytoscapePedigree.R**. This script uses the soybean parentage data in the **SoybasePedigreeData.csv** table to  make pedigree trees for a given soybean cultivar with Cytoscape. Because of this [Cytoscape](https://cytoscape.org/) has to be installed for the script to work. The **MakeFullGraph.R** script is used to make an igraph object using the full set of pedigree data. This graph is then used in the **GetPedigree_fromGraph** function to rapidly build the pedigree tree. This function is a faster replacement for the less efficient **GetPedigree** function.
 
