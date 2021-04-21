@@ -11,7 +11,8 @@
 requiredPackages <- c("RCy3", 
                       "tidyverse",
                       "R6DS",
-                      "igraph")
+                      "igraph",
+                      "visNetwork")
 toInstall <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 if(length(toInstall)) install.packages(toInstall)
 
@@ -19,6 +20,7 @@ library(tidyverse)
 library(R6DS)
 library(RCy3)
 library(igraph)
+library(visNetwork)
 
 # A function to find and replace selfing notation with something
 # more easily parsable
@@ -404,6 +406,9 @@ pedigree_VisNetwork <- function(graph = AllCrosses_igraph, cultivar = "NC-Dilday
   
   visNetwork(Nodes, Edges) %>%
     visEdges(arrows = "to") %>%
-    visHierarchicalLayout(direction = "UD", sortMethod = "directed")
+    visHierarchicalLayout(direction = "UD", 
+                          sortMethod = "directed", 
+                          levelSeparation = 150, 
+                          edgeMinimization = FALSE)
 }
-
+pedigree_VisNetwork()
