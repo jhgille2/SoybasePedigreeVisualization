@@ -1,5 +1,5 @@
 # Soybase Pedigree Visualization  
-Visualization tools for the Soybase soybean parentage data.
+Visualization scripts for the Soybase soybean parentage data.
 
 ![Example pedigree](./Images/ExampleNetwork.svg)
 
