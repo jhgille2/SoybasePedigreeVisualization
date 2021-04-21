@@ -3,27 +3,29 @@
 ## Script purpose: functions to convert complicated pedigrees to 
 ## 'computer-friendly' formats, ready for visualization as pedigree trees
 ## with cytoscape
-## Date: 2021-04-22
+## Date: 2021-04-20
 ## Author: Jay Gillenwater
 ##################################################
 
 # Check for required packages and install if they are not already installed
 requiredPackages <- c("RCy3", 
                       "tidyverse",
-                      "R6DS")
+                      "R6DS",
+                      "igraph")
 toInstall <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 if(length(toInstall)) install.packages(toInstall)
 
 library(tidyverse)
 library(R6DS)
 library(RCy3)
+library(igraph)
 
 # A function to find and replace selfing notation with something
 # more easily parsable
 Simplify_Selfs <- function(Cross){
   
   # Get all the selfs in the cross
-  AllSelfs <- str_extract_all(Cross, " \\(\\d+\\)")
+  AllSelfs <- str_extract_all(Cross, "\\(\\d+\\)")
   
   if(length(AllSelfs[[1]]) == 0){
     return(Cross)
@@ -84,7 +86,7 @@ ReformatSelfs <- function(SelfedCross){
     str_remove_all("_SelfingGenerations__") %>% 
     as.numeric()
   
-  NewSuffix <- paste(" (", SelfNum, ")", sep = "")
+  NewSuffix <- paste("(", SelfNum, ")", sep = "")
   
   ReplaceStrings <- NewSuffix
   names(ReplaceStrings) <- as.character(unlist(SelfSuffix))
@@ -234,6 +236,8 @@ CleanParent <- function(Parent){
 # make one big graph using all the pedigree data and then extract subgraphs for a given cultivar
 # instead of building them on the fly.
 #
+##### UPDATE: Check next section, the new function that uses a graph to search is much faster
+#
 # Another source of inefficiency is that right now, the function will repeatedly build the
 # same parts of the graph if a cultivar is used multiple times. This is definitely solvable
 # by keeping track what crosses have already been run and/or using a better data structure
@@ -350,3 +354,43 @@ createNetworkFromDataFrames(TreeNodes,
                             TreeEdges, 
                             title = "NC-Dilday pedigree", 
                             collection = "DataFrame Example")
+
+
+## Section: Functions that do the same thing, but operate on an igraph object
+####################################################################################
+
+# Load the pre-made graph (see MakeFullGraph.R)
+load("./Data/AllCrossesGraph.RData")
+
+# This function does essentially the same thing as the GetPedigree function from above, 
+# but is MUCH faster
+GetPedigree_fromGraph <- function(graph = AllCrosses_igraph, cultivar = "NC-Roy", MaxDepth = 5){
+  
+  LocalGraph <- make_ego_graph(graph, order = MaxDepth, cultivar, mode = "in")
+  LocalGraph <- LocalGraph[[1]]
+  
+  Igraph_toDataframe <- function(graph){
+    
+    Edges <- get.edgelist(graph) %>%
+      as.data.frame() %>%
+      rename(source = V1, target = V2)
+    
+    Nodes <- V(graph) %>% names()
+    NodeDF <- data.frame(id = Nodes)
+    
+    return(list(Edges = distinct(Edges), Nodes = distinct(NodeDF)))
+  }
+  
+  Igraph_toDataframe(LocalGraph)
+}
+
+# An example
+NC_Roy_dfs <- GetPedigree_fromGraph(cultivar = "NC-Roy", MaxDepth = 20)
+
+cytoscapePing()
+
+createNetworkFromDataFrames(NC_Roy_dfs$Nodes, 
+                            NC_Roy_dfs$Edges, 
+                            title = "NC-Roy pedigree - igraph", 
+                            collection = "DataFrame Example")
+
