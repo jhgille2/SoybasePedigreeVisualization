@@ -378,14 +378,14 @@ GetPedigree_fromGraph <- function(graph = AllCrosses_igraph, cultivar = "NC-Roy"
     Nodes <- V(graph) %>% names()
     NodeDF <- data.frame(id = Nodes)
     
-    return(list(Edges = distinct(Edges), Nodes = distinct(NodeDF)))
+    return(list(Edges = distinct(Edges), Nodes = distinct(NodeDF), FullGraph = graph))
   }
   
   Igraph_toDataframe(LocalGraph)
 }
 
 # An example
-NC_Roy_dfs <- GetPedigree_fromGraph(cultivar = "NC-Roy", MaxDepth = 20)
+NC_Roy_dfs <- GetPedigree_fromGraph(cultivar = "NC-Dilday", MaxDepth = 4)
 
 cytoscapePing()
 
@@ -393,4 +393,17 @@ createNetworkFromDataFrames(NC_Roy_dfs$Nodes,
                             NC_Roy_dfs$Edges, 
                             title = "NC-Roy pedigree - igraph", 
                             collection = "DataFrame Example")
+
+# Make a network using the visNetwork package
+pedigree_VisNetwork <- function(graph = AllCrosses_igraph, cultivar = "NC-Dilday", MaxDepth = 5){
+  
+  GraphData <- GetPedigree_fromGraph(graph, cultivar, MaxDepth)
+  
+  Edges <- GraphData$Edges %>% rename(from = source, to = target)
+  Nodes <- GraphData$Nodes %>% mutate(label = id, title = paste0("<p>", id,"</p>"))
+  
+  visNetwork(Nodes, Edges) %>%
+    visEdges(arrows = "to") %>%
+    visHierarchicalLayout(direction = "UD", sortMethod = "directed")
+}
 
