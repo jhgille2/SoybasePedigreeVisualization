@@ -367,11 +367,12 @@ load("./Data/AllCrossesGraph.RData")
 # This function does essentially the same thing as the GetPedigree function from above, 
 # but is MUCH faster
 #
-# Right now, some nodes returned by this parent will only have one parent. This is because
-# im just extracting a neighborhood up from the cultivar based on edge distance. 
+# Right now, some vertices returned by this parent will only have one parent. This is because
+# I'm just extracting a neighborhood of vertices up the graph from the starting cultivar based
+# on how many vertices away from the starting cultivar they are.
 # The upshot is that if a intermediate crosses parent is greater than this distance from
-# the end cultivar, it is excluded. This is solvable by extending the graph by one at the 
-# final vertices, but I havent implemented it yet. 
+# the starting cultivar, it is excluded. This is solvable by extending the graph by one at the 
+# final vertices if the vertex has only one parent, but I haven't implemented this yet. 
 GetPedigree_fromGraph <- function(graph = AllCrosses_igraph, cultivar = "NC-Roy", MaxDepth = 5){
   
   LocalGraph <- make_ego_graph(graph, order = MaxDepth, cultivar, mode = "in")
@@ -408,7 +409,9 @@ pedigree_VisNetwork <- function(graph = AllCrosses_igraph, cultivar = "NC-Dilday
   GraphData <- GetPedigree_fromGraph(graph, cultivar, MaxDepth)
   
   Edges <- GraphData$Edges %>% rename(from = source, to = target)
-  Nodes <- GraphData$Nodes %>% mutate(label = id, title = paste0("<p>", id,"</p>"))
+  Nodes <- GraphData$Nodes %>% mutate(label = id, 
+                                      SoybaseURL = paste0("https://soybase.org/uniformtrial/index.php?filter=", id, "&page=lines&test=ALL"), 
+                                      title = paste0("<p><a href=", SoybaseURL, ">", id,"</a></p>"))
   
   visNetwork(Nodes, Edges) %>%
     visEdges(arrows = "to") %>%
@@ -423,6 +426,8 @@ pedigree_VisNetwork()
 # A function to convert the pedigree graph to a dataframe and a text representation of the graph
 Pedigree_asString <- function(PedigreeGraph){
   
+  SoybaseString <- "https://soybase.org/uniformtrial/index.php?filter=L49-4091&page=lines&test=ALL"
+  
   # Topological sort of pedigree
   Ped_topo <- topo_sort(PedigreeGraph) %>% names()
   
@@ -436,7 +441,8 @@ Pedigree_asString <- function(PedigreeGraph){
     arrange(desc(to)) %>%
     rename(Cultivar = to) %>%
     select(Female, Male, Cultivar) %>%
-    mutate(CrossString = paste(Cultivar, "=", Female, "X", Male)) -> Ped_df
+    mutate(CrossString = paste(Cultivar, "=", Female, "X", Male), 
+           SoybaseURL = paste0("https://soybase.org/uniformtrial/index.php?filter=", Cultivar, "&page=lines&test=ALL")) -> Ped_df
   
   # String representation of the cross
   Ped_String <- reduce(Ped_df$CrossString, paste, sep = ", ")
