@@ -60,7 +60,8 @@ AllCrosses %>% pivot_longer(c(Female, Male)) %>%
   dplyr::select(value, Cultivar, name) %>%
   rename(source = value, target = Cultivar) %>%
   dplyr::filter(!is.na(source)) %>%
-  map_dfc(., CleanParent) -> EdgeList_AllCrosses
+  map_dfc(., CleanParent) %>% 
+  distinct() -> EdgeList_AllCrosses
 
 AllNodes <- data.frame(id = unique(unlist(select(EdgeList_AllCrosses, source, target))))
 
