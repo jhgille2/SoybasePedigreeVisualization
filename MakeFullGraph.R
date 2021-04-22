@@ -57,12 +57,12 @@ AllComplex <- reduce(ComplexParentPedigrees, rbind)
 AllCrosses <- reduce(list(AllComplex, ComplexCrosses, SimpleCrosses), bind_rows)
 
 AllCrosses %>% pivot_longer(c(Female, Male)) %>%
-  dplyr::select(value, Cultivar) %>%
+  dplyr::select(value, Cultivar, name) %>%
   rename(source = value, target = Cultivar) %>%
   dplyr::filter(!is.na(source)) %>%
   map_dfc(., CleanParent) -> EdgeList_AllCrosses
 
-AllNodes <- data.frame(id = unique(unlist(EdgeList_AllCrosses)))
+AllNodes <- data.frame(id = unique(unlist(select(EdgeList_AllCrosses, source, target))))
 
 AllCrosses_igraph <- graph_from_data_frame(EdgeList_AllCrosses)
 

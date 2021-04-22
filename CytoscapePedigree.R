@@ -366,6 +366,12 @@ load("./Data/AllCrossesGraph.RData")
 
 # This function does essentially the same thing as the GetPedigree function from above, 
 # but is MUCH faster
+#
+# Right now, some nodes returned by this parent will only have one parent. This is because
+# im just extracting a neighborhood up from the cultivar based on edge distance. 
+# The upshot is that if a intermediate crosses parent is greater than this distance from
+# the end cultivar, it is excluded. This is solvable by extending the graph by one at the 
+# final vertices, but I havent implemented it yet. 
 GetPedigree_fromGraph <- function(graph = AllCrosses_igraph, cultivar = "NC-Roy", MaxDepth = 5){
   
   LocalGraph <- make_ego_graph(graph, order = MaxDepth, cultivar, mode = "in")
@@ -387,7 +393,7 @@ GetPedigree_fromGraph <- function(graph = AllCrosses_igraph, cultivar = "NC-Roy"
 }
 
 # An example
-NC_Roy_dfs <- GetPedigree_fromGraph(cultivar = "NC-Dilday", MaxDepth = 4)
+NC_Roy_dfs <- GetPedigree_fromGraph(cultivar = "NC-Roy", MaxDepth = 4)
 
 cytoscapePing()
 
@@ -412,3 +418,28 @@ pedigree_VisNetwork <- function(graph = AllCrosses_igraph, cultivar = "NC-Dilday
                           edgeMinimization = FALSE)
 }
 pedigree_VisNetwork()
+
+
+# A function to convert the pedigree graph to a dataframe and a text representation of the graph
+Pedigree_asString <- function(PedigreeGraph){
+  
+  # Topological sort of pedigree
+  Ped_topo <- topo_sort(PedigreeGraph) %>% names()
+  
+  Ped_edges <- as_data_frame(PedigreeGraph, what = "edges")
+  Ped_edges$to <- factor(Ped_edges$to, levels = Ped_topo)
+  
+  # Convert the edgelist to a dataframe with columns for female parent, male parent, and cultivar
+  Ped_edges %>% 
+    distinct() %>%
+    pivot_wider(id_cols = to, names_from = name, values_from = from) %>%
+    arrange(desc(to)) %>%
+    rename(Cultivar = to) %>%
+    select(Female, Male, Cultivar) %>%
+    mutate(CrossString = paste(Cultivar, "=", Female, "X", Male)) -> Ped_df
+  
+  # String representation of the cross
+  Ped_String <- reduce(Ped_df$CrossString, paste, sep = ", ")
+  
+  return(list(PedigreeDF = Ped_df, PedigreeString = Ped_String))
+}
