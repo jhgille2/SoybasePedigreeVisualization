@@ -394,7 +394,7 @@ GetPedigree_fromGraph <- function(graph = AllCrosses_igraph, cultivar = "NC-Roy"
 }
 
 # An example
-NC_Roy_dfs <- GetPedigree_fromGraph(cultivar = "NC-Roy", MaxDepth = 4)
+NC_Roy_dfs <- GetPedigree_fromGraph(cultivar = "NC-Roy", MaxDepth = 20)
 
 cytoscapePing()
 

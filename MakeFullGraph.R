@@ -63,8 +63,14 @@ AllCrosses %>% pivot_longer(c(Female, Male)) %>%
   map_dfc(., CleanParent) %>% 
   distinct() -> EdgeList_AllCrosses
 
-AllNodes <- data.frame(id = unique(unlist(select(EdgeList_AllCrosses, source, target))))
+AllNodes <- data.frame(id = unique(unlist(select(EdgeList_AllCrosses, source, target)))) %>% distinct()
+NodeData <- read_csv("./Data/CrossData_withTraits.csv") %>% 
+  select(-one_of(c("Female", "Male"))) %>%
+  mutate(PI_Num = str_remove(PI_Num, " "))
 
-AllCrosses_igraph <- graph_from_data_frame(EdgeList_AllCrosses)
+VertexData <- left_join(distinct(AllNodes), NodeData, by = c("id" = "Cultivar"))
+VertexData <- VertexData[!duplicated(VertexData$id), ]
+
+AllCrosses_igraph <- graph_from_data_frame(EdgeList_AllCrosses, vertices = VertexData)
 
 save(AllCrosses_igraph, file = "./Data/AllCrossesGraph.RData")

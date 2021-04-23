@@ -11,6 +11,8 @@ library(vroom)
 
 # Read in all results
 AllResults <- vroom("./Data/grin_results.txt")
+PINumbers <- vroom("./Data/PI_Numbers.csv") %>% mutate(PI_Num = str_remove(PI_Num, " "))
+CrossData <- vroom("./Data/SoybasePedigreeData.csv")
 
 AllResults_reduced <- AllResults %>%
   clean_names() %>%
@@ -44,5 +46,10 @@ AllResults_reduced %>%
          seed_weight  = map_dbl(seed_weight, AverageTrait), 
          yield        = map_dbl(yield, AverageTrait)) -> AllResults_cleaned
 
+
+left_join(CrossData, PINumbers) %>% 
+  left_join(., AllResults_cleaned, by = c("PI_Num" = "grin_accession")) -> CrossData_withTraits
+
+write_csv(CrossData_withTraits, "./Data/CrossData_withTraits.csv")
 write_csv(AllResults_cleaned, "./Data/GrinTraits.csv")
 
