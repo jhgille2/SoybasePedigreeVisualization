@@ -17,7 +17,7 @@ I've made a small [shiny app](https://jhgb5.shinyapps.io/pedigreenetwork/) to sh
 ## Future work  
 - ~~A shiny app that includes cytoscape would be nice so that everything can be done in the same place. The [cyjShiny](https://github.com/cytoscape/cyjShiny) package looks promising, but I'll have to mess around with it.~~   
 - ~~Add functions to make more traditional text based pedigrees. While not as helpful for visualizing the pedigrees (IMO), could still be helpful to augment the plots with an alternate representation of the same information.~~
-- Add tables with supplementary data for the cultivars. I'll need to track down phenotype data, but [haplotype data](https://soybase.org/snps/index.php#dltable) from soybase would also be a good place to start. Could be used to investigate patterns in phenotypic and genotypic similarity/differences. 
+- Add tables with supplementary data for the cultivars. ~~I'll need to track down phenotype data~~, but [haplotype data](https://soybase.org/snps/index.php#dltable) from soybase would also be a good place to start. Could be used to investigate patterns in phenotypic and genotypic similarity/differences. 
 - Reformatting this repository as a R package would make use easier. 
 - Add a tool to the shiny app that lets a user upload a file of male/female lines and get back the pedigree for each line in a new file that they can then download.  
 - Add nodes/edges to connect a cultivar to its selfs (ex: Lee -> Lee (2)).  
