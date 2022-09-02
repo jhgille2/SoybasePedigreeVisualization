@@ -9,14 +9,22 @@
 
 # Check for required packages and install if they are not already installed
 requiredPackages <- c("RCy3", 
-                      "tidyverse",
+                      "dplyr",
+                      "tidyr", 
+                      "stringr",
+                      "readr",
+                      "purrr",
                       "R6DS",
                       "igraph",
                       "visNetwork")
 toInstall <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 if(length(toInstall)) install.packages(toInstall)
 
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(readr)
+library(purrr)
 library(R6DS)
 library(RCy3)
 library(igraph)
