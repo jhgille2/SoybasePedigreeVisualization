@@ -14,7 +14,7 @@ After that, the easiest way to use this script would probably be to clone this r
 ## Shiny App
 I've made a small [shiny app](https://jhgb5.shinyapps.io/pedigreenetwork/) to show these pedigree networks.  
 
-> Warn
+> [!WARNING]  
 > There are some things to look out for in the app. If a pedigree branch ends before the selected depth, check the page of the last node (by clicking on the link that pops up when you hover over the last node). Soybase doesn't always have complete data in the pedigree fields of their table and sometimes moves this data to the comments section of the table. Also be suspicious of branches that end in a self (see the future work section)
 
 ## Future work  
